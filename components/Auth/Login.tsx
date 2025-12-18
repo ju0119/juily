@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword, auth, isOffline } from '../../firebase';
-import { Link, useHistory as useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, LogIn } from 'lucide-react';
 
 const Login = () => {
@@ -13,13 +13,13 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isOffline) {
-      navigate.push('/dashboard');
+      navigate('/dashboard');
       return;
     }
     try {
       if (!auth) throw new Error("Auth not initialized");
       await signInWithEmailAndPassword(auth, email, password);
-      navigate.push('/dashboard');
+      navigate('/dashboard');
     } catch (err: any) {
       setError('登入失敗：' + err.message);
     }

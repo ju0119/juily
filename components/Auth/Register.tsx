@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword, auth, isOffline } from '../../firebase';
-import { Link, useHistory as useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, UserPlus } from 'lucide-react';
 
 const Register = () => {
@@ -24,7 +24,7 @@ const Register = () => {
     try {
       if (!auth) throw new Error("Auth not initialized");
       await createUserWithEmailAndPassword(auth, email, password);
-      navigate.push('/dashboard');
+      navigate('/dashboard');
     } catch (err: any) {
       setError('註冊失敗：' + err.message);
     }

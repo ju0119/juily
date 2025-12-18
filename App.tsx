@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { HashRouter, Switch as Routes, Route, Redirect as Navigate, Link, useHistory } from 'react-router-dom';
+// Correctly import required components from react-router-dom v6
+import { HashRouter, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signOut, auth, isOffline } from './firebase';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
@@ -8,12 +9,6 @@ import Dashboard from './components/Dashboard';
 import Accounts from './components/Accounts';
 import Transactions from './components/Transactions';
 import { LayoutDashboard, Wallet, ReceiptText, LogOut, Menu, X } from 'lucide-react';
-
-// Shim for useNavigate to useHistory
-const useNavigate = () => {
-  const history = useHistory();
-  return (path: string) => history.push(path);
-};
 
 const Sidebar = ({ user, handleLogout }: { user: any, handleLogout: () => void }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -112,7 +107,7 @@ const ProtectedRoute: React.FC<React.PropsWithChildren<{}>> = ({ children }) => 
     );
   }
   
-  if (!user && !isOffline) return <Navigate to="/login" />;
+  if (!user && !isOffline) return <Navigate to="/login" replace />;
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
@@ -130,12 +125,12 @@ export default function App() {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/login" component={Login} />
-        <Route path="/register" component={Register} />
-        <Route path="/dashboard" render={() => <ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/accounts" render={() => <ProtectedRoute><Accounts /></ProtectedRoute>} />
-        <Route path="/transactions" render={() => <ProtectedRoute><Transactions /></ProtectedRoute>} />
-        <Route exact path="/" render={() => <Navigate to="/dashboard" />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/accounts" element={<ProtectedRoute><Accounts /></ProtectedRoute>} />
+        <Route path="/transactions" element={<ProtectedRoute><Transactions /></ProtectedRoute>} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </HashRouter>
   );
