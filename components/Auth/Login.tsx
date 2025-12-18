@@ -1,25 +1,26 @@
 
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword, auth, isOffline } from '../../firebase';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { Mail, Lock, LogIn } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  // Replaced useNavigate with useHistory to support potential v5 environment
+  const history = useHistory();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isOffline) {
-      navigate('/dashboard');
+      history.push('/dashboard');
       return;
     }
     try {
       if (!auth) throw new Error("Auth not initialized");
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/dashboard');
+      history.push('/dashboard');
     } catch (err: any) {
       setError('登入失敗：' + err.message);
     }

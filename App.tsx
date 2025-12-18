@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-// Correctly import required components from react-router-dom v6
-import { HashRouter, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
+import { HashRouter, Switch, Route, Redirect, Link, useHistory } from 'react-router-dom';
 import { onAuthStateChanged, signOut, auth, isOffline } from './firebase';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
@@ -74,7 +73,8 @@ const Sidebar = ({ user, handleLogout }: { user: any, handleLogout: () => void }
 const ProtectedRoute: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  // Replaced useNavigate with useHistory to support potential v5 environment
+  const history = useHistory();
 
   useEffect(() => {
     if (isOffline) {
@@ -95,7 +95,7 @@ const ProtectedRoute: React.FC<React.PropsWithChildren<{}>> = ({ children }) => 
     if (!isOffline && auth) {
       await signOut(auth);
     }
-    navigate('/login');
+    history.push('/login');
   };
 
   if (loading) {
@@ -107,7 +107,7 @@ const ProtectedRoute: React.FC<React.PropsWithChildren<{}>> = ({ children }) => 
     );
   }
   
-  if (!user && !isOffline) return <Navigate to="/login" replace />;
+  if (!user && !isOffline) return <Redirect to="/login" />;
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
@@ -124,14 +124,14 @@ const ProtectedRoute: React.FC<React.PropsWithChildren<{}>> = ({ children }) => 
 export default function App() {
   return (
     <HashRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/accounts" element={<ProtectedRoute><Accounts /></ProtectedRoute>} />
-        <Route path="/transactions" element={<ProtectedRoute><Transactions /></ProtectedRoute>} />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+      <Switch>
+        <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
+        <Route path="/dashboard"><ProtectedRoute><Dashboard /></ProtectedRoute></Route>
+        <Route path="/accounts"><ProtectedRoute><Accounts /></ProtectedRoute></Route>
+        <Route path="/transactions"><ProtectedRoute><Transactions /></ProtectedRoute></Route>
+        <Redirect from="/" to="/dashboard" />
+      </Switch>
     </HashRouter>
   );
 }
