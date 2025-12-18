@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
-// Fix: Separate type and value imports for Firebase Auth
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { auth, isOffline } from './firebase';
@@ -22,7 +21,7 @@ const Sidebar = ({ user, handleLogout }: { user: User | null, handleLogout: () =
       className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition-colors"
     >
       <Icon size={20} />
-      <span>{label}</span>
+      <span className="font-medium">{label}</span>
     </Link>
   );
 
@@ -30,44 +29,49 @@ const Sidebar = ({ user, handleLogout }: { user: User | null, handleLogout: () =
     <>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-50 p-2 bg-white rounded-md shadow-md lg:hidden"
+        className="fixed top-4 left-4 z-50 p-2 bg-white rounded-md shadow-lg lg:hidden"
       >
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      <div className={`fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-xl transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-200 ease-in-out`}>
+      <div className={`fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-2xl transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out`}>
         <div className="flex flex-col h-full p-6">
-          <div className="mb-10">
-            <h1 className="text-2xl font-bold text-indigo-600">SmartFinance</h1>
-            <p className="text-xs text-slate-400">AI Powered Wealth Management</p>
+          <div className="mb-10 px-2">
+            <h1 className="text-2xl font-black text-indigo-600 tracking-tight">SmartFinance</h1>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">AI Wealth Guardian</p>
           </div>
 
-          <nav className="flex-1 space-y-2">
-            <NavItem to="/dashboard" icon={LayoutDashboard} label="儀表板" />
-            <NavItem to="/accounts" icon={Wallet} label="帳戶管理" />
-            <NavItem to="/transactions" icon={ReceiptText} label="財務紀錄" />
+          <nav className="flex-1 space-y-1">
+            <NavItem to="/dashboard" icon={LayoutDashboard} label="財務儀表板" />
+            <NavItem to="/accounts" icon={Wallet} label="我的帳戶" />
+            <NavItem to="/transactions" icon={ReceiptText} label="收支明細" />
           </nav>
 
-          <div className="mt-auto pt-6 border-t">
-            <div className="mb-4">
-              <p className="text-sm font-medium text-slate-900 truncate">{user?.email}</p>
-              {isOffline && <span className="text-[10px] text-orange-500 font-bold uppercase">Demo Mode</span>}
+          <div className="mt-auto pt-6 border-t border-slate-100">
+            <div className="mb-4 px-2">
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-tighter">當前用戶</p>
+              <p className="text-sm font-bold text-slate-900 truncate mt-1">{user?.email}</p>
+              {isOffline && (
+                <div className="mt-2 px-2 py-1 bg-amber-50 rounded border border-amber-100">
+                  <span className="text-[10px] text-amber-600 font-black uppercase">展示模式 (離線)</span>
+                </div>
+              )}
             </div>
             <button 
               onClick={handleLogout}
-              className="flex items-center gap-3 w-full px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+              className="flex items-center gap-3 w-full px-4 py-3 text-rose-500 hover:bg-rose-50 rounded-xl transition-all font-bold"
             >
               <LogOut size={20} />
-              <span>登出</span>
+              <span>登出系統</span>
             </button>
           </div>
         </div>
       </div>
+      {isOpen && <div className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-30 lg:hidden" onClick={() => setIsOpen(false)} />}
     </>
   );
 };
 
-// Fix: Using React.FC with PropsWithChildren to ensure 'children' is recognized by the compiler
 const ProtectedRoute: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -75,8 +79,7 @@ const ProtectedRoute: React.FC<React.PropsWithChildren<{}>> = ({ children }) => 
 
   useEffect(() => {
     if (isOffline) {
-      // Mock user for demo mode
-      setUser({ email: 'demo@example.com', uid: 'demo' } as User);
+      setUser({ email: 'demo@smartfinance.ai', uid: 'demo' } as User);
       setLoading(false);
       return;
     }
@@ -96,13 +99,21 @@ const ProtectedRoute: React.FC<React.PropsWithChildren<{}>> = ({ children }) => 
     navigate('/login');
   };
 
-  if (loading) return <div className="flex items-center justify-center h-screen">載入中...</div>;
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-slate-50 gap-4">
+        <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+        <p className="text-slate-500 font-bold animate-pulse">正在安全進入系統...</p>
+      </div>
+    );
+  }
+  
   if (!user && !isOffline) return <Navigate to="/login" />;
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
       <Sidebar user={user} handleLogout={handleLogout} />
-      <main className="flex-1 lg:ml-64 p-4 lg:p-8">
+      <main className="flex-1 lg:ml-64 p-4 lg:p-10 transition-all duration-300">
         <div className="max-w-6xl mx-auto">
           {children}
         </div>

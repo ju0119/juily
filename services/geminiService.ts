@@ -7,32 +7,38 @@ export const getFinancialAdvice = async (
   transactions: Transaction[]
 ): Promise<string> => {
   const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    return "AI 建議目前不可用（未設定 API Key）。請在 GitHub Secrets 中配置 API_KEY 以啟用此功能。";
+  
+  if (!apiKey || apiKey === '') {
+    return "系統未偵測到有效的 API Key。請確保您已在 GitHub Secrets 中設定 API_KEY。";
   }
 
   try {
     const ai = new GoogleGenAI({ apiKey });
+    // 使用推薦的專業分析模型
     const model = 'gemini-3-pro-preview';
 
-    // 彙整簡單的財務數據摘要
     const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
-    const recentTxStr = transactions.slice(0, 10).map(t => 
-      `${t.date}: ${t.type === 'income' ? '+' : '-'}${t.amount} (${t.categoryName} - ${t.note})`
-    ).join('\n');
+    const recentTxStr = transactions
+      .slice(0, 20)
+      .map(t => `${t.date} | ${t.type === 'income' ? '收入' : '支出'} | ${t.amount}元 | 分類: ${t.categoryName} | 備註: ${t.note}`)
+      .join('\n');
 
     const prompt = `
-      身為一位專業的財務顧問，請根據以下財務狀況提供具體建議：
+      身為專業的個人理財 AI 顧問，請根據以下財務資料提供深度分析：
       
-      帳戶總餘額：${totalBalance} 元
-      近期交易紀錄：
+      【當前財務狀態】
+      - 總資產：${totalBalance} TWD
+      - 帳戶數量：${accounts.length}
+      
+      【最近 20 筆交易明細】
       ${recentTxStr}
       
-      請以繁體中文回覆，包含：
-      1. 支出結構分析
-      2. 儲蓄與理財建議
-      3. 一個具體的行動目標
-      回覆應簡潔、友善且富有洞察力。
+      請以繁體中文提供：
+      1. **消費趨勢洞察**：分析哪些分類佔比過高。
+      2. **財務風險評估**：當前餘額是否足以支撐短期生活或應對緊急狀況？
+      3. **具體行動方案**：給出 3 個明確的理財建議（如減少某類支出、增加儲蓄目標等）。
+      
+      請保持回覆語氣專業且精簡。
     `;
 
     const response = await ai.models.generateContent({
@@ -40,9 +46,9 @@ export const getFinancialAdvice = async (
       contents: prompt,
     });
 
-    return response.text || "無法生成建議。";
+    return response.text || "AI 暫時無法分析，請稍後再試。";
   } catch (error) {
-    console.error("Gemini AI error:", error);
-    return "在生成 AI 建議時發生錯誤。";
+    console.error("Gemini AI 分析失敗:", error);
+    return "分析過程中發生錯誤。請檢查 GitHub Secrets 的 API Key 是否有效。";
   }
 };
