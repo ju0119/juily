@@ -6,15 +6,12 @@ export const getFinancialAdvice = async (
   accounts: BankAccount[],
   transactions: Transaction[]
 ): Promise<string> => {
-  const apiKey = process.env.API_KEY;
-  
-  if (!apiKey || apiKey === '') {
-    return "系統未偵測到有效的 API Key。請確保您已在 GitHub Secrets 中設定 API_KEY。";
-  }
-
   try {
-    const ai = new GoogleGenAI({ apiKey });
-    // 使用推薦的專業分析模型
+    /**
+     * Always use a new instance to ensure it uses the latest API key injected by the environment.
+     * Use gemini-3-pro-preview for complex reasoning tasks.
+     */
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const model = 'gemini-3-pro-preview';
 
     const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
@@ -41,14 +38,16 @@ export const getFinancialAdvice = async (
       請保持回覆語氣專業且精簡。
     `;
 
+    // 呼叫 generateContent 並帶入模型與內容
     const response = await ai.models.generateContent({
       model,
       contents: prompt,
     });
 
+    // 使用 .text 屬性獲取結果
     return response.text || "AI 暫時無法分析，請稍後再試。";
   } catch (error) {
     console.error("Gemini AI 分析失敗:", error);
-    return "分析過程中發生錯誤。請檢查 GitHub Secrets 的 API Key 是否有效。";
+    return "分析過程中發生錯誤，請檢查系統設定。";
   }
 };

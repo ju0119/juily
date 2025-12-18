@@ -1,9 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { HashRouter, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import type { User } from 'firebase/auth';
-import { auth, isOffline } from './firebase';
+import { HashRouter, Switch as Routes, Route, Redirect as Navigate, Link, useHistory } from 'react-router-dom';
+import { onAuthStateChanged, signOut, auth, isOffline } from './firebase';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import Dashboard from './components/Dashboard';
@@ -11,7 +9,13 @@ import Accounts from './components/Accounts';
 import Transactions from './components/Transactions';
 import { LayoutDashboard, Wallet, ReceiptText, LogOut, Menu, X } from 'lucide-react';
 
-const Sidebar = ({ user, handleLogout }: { user: User | null, handleLogout: () => void }) => {
+// Shim for useNavigate to useHistory
+const useNavigate = () => {
+  const history = useHistory();
+  return (path: string) => history.push(path);
+};
+
+const Sidebar = ({ user, handleLogout }: { user: any, handleLogout: () => void }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const NavItem = ({ to, icon: Icon, label }: { to: string, icon: any, label: string }) => (
@@ -73,19 +77,19 @@ const Sidebar = ({ user, handleLogout }: { user: User | null, handleLogout: () =
 };
 
 const ProtectedRoute: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (isOffline) {
-      setUser({ email: 'demo@smartfinance.ai', uid: 'demo' } as User);
+      setUser({ email: 'demo@smartfinance.ai', uid: 'demo' });
       setLoading(false);
       return;
     }
 
     if (!auth) return;
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser: any) => {
       setUser(currentUser);
       setLoading(false);
     });
@@ -126,12 +130,12 @@ export default function App() {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/accounts" element={<ProtectedRoute><Accounts /></ProtectedRoute>} />
-        <Route path="/transactions" element={<ProtectedRoute><Transactions /></ProtectedRoute>} />
-        <Route path="/" element={<Navigate to="/dashboard" />} />
+        <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
+        <Route path="/dashboard" render={() => <ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/accounts" render={() => <ProtectedRoute><Accounts /></ProtectedRoute>} />
+        <Route path="/transactions" render={() => <ProtectedRoute><Transactions /></ProtectedRoute>} />
+        <Route exact path="/" render={() => <Navigate to="/dashboard" />} />
       </Routes>
     </HashRouter>
   );

@@ -4,20 +4,14 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  // 使用相對路徑，徹底解決 GitHub Pages 子目錄或重新整理時的白畫面問題
+  // GitHub Pages 必須使用相對路徑 base: './' 以支援子目錄佈署
   base: './',
   define: {
-    // 注入環境變數，API_KEY 從 GitHub Secrets 取得
+    // 注入 Gemini API KEY
     'process.env.API_KEY': JSON.stringify(process.env.API_KEY || ''),
   },
   build: {
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -25,5 +19,9 @@ export default defineConfig({
         },
       },
     },
+  },
+  esbuild: {
+    // 生產環境移除 console 與 debugger
+    drop: ['console', 'debugger'],
   },
 });

@@ -1,9 +1,7 @@
 
 import React, { useState } from 'react';
-// Fix: Direct import for createUserWithEmailAndPassword from modular SDK
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth, isOffline } from '../../firebase';
-import { Link, useNavigate } from 'react-router-dom';
+import { createUserWithEmailAndPassword, auth, isOffline } from '../../firebase';
+import { Link, useHistory as useNavigate } from 'react-router-dom';
 import { Mail, Lock, UserPlus } from 'lucide-react';
 
 const Register = () => {
@@ -26,7 +24,7 @@ const Register = () => {
     try {
       if (!auth) throw new Error("Auth not initialized");
       await createUserWithEmailAndPassword(auth, email, password);
-      navigate('/dashboard');
+      navigate.push('/dashboard');
     } catch (err: any) {
       setError('註冊失敗：' + err.message);
     }

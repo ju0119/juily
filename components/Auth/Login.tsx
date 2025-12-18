@@ -1,9 +1,7 @@
 
 import React, { useState } from 'react';
-// Fix: Direct import for signInWithEmailAndPassword from modular SDK
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth, isOffline } from '../../firebase';
-import { Link, useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword, auth, isOffline } from '../../firebase';
+import { Link, useHistory as useNavigate } from 'react-router-dom';
 import { Mail, Lock, LogIn } from 'lucide-react';
 
 const Login = () => {
@@ -15,13 +13,13 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isOffline) {
-      navigate('/dashboard');
+      navigate.push('/dashboard');
       return;
     }
     try {
       if (!auth) throw new Error("Auth not initialized");
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/dashboard');
+      navigate.push('/dashboard');
     } catch (err: any) {
       setError('登入失敗：' + err.message);
     }

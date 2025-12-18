@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot } from 'firebase/firestore';
-import { db, auth, isOffline } from '../firebase';
+import { db, auth, isOffline, collection, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot } from '../firebase';
 import { BankAccount } from '../types';
 import { Plus, Trash2, Edit2, Wallet } from 'lucide-react';
 import { DEMO_ACCOUNTS } from '../constants';
@@ -19,8 +18,8 @@ const Accounts = () => {
     }
     if (!db || !auth?.currentUser) return;
     const q = query(collection(db, 'accounts'), where('userId', '==', auth.currentUser.uid));
-    return onSnapshot(q, (snapshot) => {
-      setAccounts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BankAccount)));
+    return onSnapshot(q, (snapshot: any) => {
+      setAccounts(snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() } as BankAccount)));
     });
   }, []);
 

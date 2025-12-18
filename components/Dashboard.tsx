@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
-import { db, auth, isOffline } from '../firebase';
+import { db, auth, isOffline, collection, query, where, onSnapshot } from '../firebase';
 import { DEMO_ACCOUNTS, DEMO_TRANSACTIONS } from '../constants';
 import { BankAccount, Transaction } from '../types';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
@@ -24,13 +23,13 @@ const Dashboard = () => {
     if (!db || !auth?.currentUser) return;
 
     const qAcc = query(collection(db, 'accounts'), where('userId', '==', auth.currentUser.uid));
-    const unsubscribeAcc = onSnapshot(qAcc, (snapshot) => {
-      setAccounts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BankAccount)));
+    const unsubscribeAcc = onSnapshot(qAcc, (snapshot: any) => {
+      setAccounts(snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() } as BankAccount)));
     });
 
     const qTx = query(collection(db, 'transactions'), where('userId', '==', auth.currentUser.uid));
-    const unsubscribeTx = onSnapshot(qTx, (snapshot) => {
-      setTransactions(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Transaction)));
+    const unsubscribeTx = onSnapshot(qTx, (snapshot: any) => {
+      setTransactions(snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() } as Transaction)));
     });
 
     return () => {

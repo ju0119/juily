@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, doc, query, where, onSnapshot, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { db, auth, isOffline } from '../firebase';
+import { db, auth, isOffline, collection, addDoc, doc, query, where, onSnapshot, getDoc, updateDoc, deleteDoc } from '../firebase';
 import { Transaction, BankAccount, Category } from '../types';
 import { DEFAULT_CATEGORIES, DEMO_ACCOUNTS, DEMO_TRANSACTIONS } from '../constants';
 import { Plus, Trash2, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
@@ -27,13 +26,13 @@ const Transactions = () => {
     if (!db || !auth?.currentUser) return;
 
     const qTx = query(collection(db, 'transactions'), where('userId', '==', auth.currentUser.uid));
-    const unsubTx = onSnapshot(qTx, (snapshot) => {
-      setTransactions(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Transaction)));
+    const unsubTx = onSnapshot(qTx, (snapshot: any) => {
+      setTransactions(snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() } as Transaction)));
     });
 
     const qAcc = query(collection(db, 'accounts'), where('userId', '==', auth.currentUser.uid));
-    const unsubAcc = onSnapshot(qAcc, (snapshot) => {
-      setAccounts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BankAccount)));
+    const unsubAcc = onSnapshot(qAcc, (snapshot: any) => {
+      setAccounts(snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() } as BankAccount)));
     });
 
     return () => { unsubTx(); unsubAcc(); };
