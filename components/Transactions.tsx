@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { db, auth, isOffline, collection, addDoc, doc, query, where, onSnapshot, getDoc, updateDoc, deleteDoc } from '../firebase';
-import { Transaction, BankAccount, Category } from '../types';
+import { Transaction, BankAccount } from '../types';
 import { DEFAULT_CATEGORIES, DEMO_ACCOUNTS, DEMO_TRANSACTIONS } from '../constants';
 import { Plus, Trash2, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 
@@ -58,7 +58,8 @@ const Transactions = () => {
     const accRef = doc(db, 'accounts', form.accountId);
     const accSnap = await getDoc(accRef);
     if (accSnap.exists()) {
-      const currentBalance = accSnap.data().balance;
+      const data = accSnap.data() as any;
+      const currentBalance = data.balance;
       const newBalance = form.type === 'income' 
         ? currentBalance + Number(form.amount) 
         : currentBalance - Number(form.amount);
@@ -75,7 +76,8 @@ const Transactions = () => {
       const accRef = doc(db, 'accounts', tx.accountId);
       const accSnap = await getDoc(accRef);
       if (accSnap.exists()) {
-        const currentBalance = accSnap.data().balance;
+        const data = accSnap.data() as any;
+        const currentBalance = data.balance;
         const newBalance = tx.type === 'income' 
           ? currentBalance - tx.amount 
           : currentBalance + tx.amount;

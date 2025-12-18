@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-// Use namespace import and HashRouter for better compatibility with current environment and GitHub Pages deployments
-import * as ReactRouterDOM from 'react-router-dom';
+// Fix: Use named imports for React Router to resolve property access errors
+import { HashRouter, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signOut, auth, isOffline } from './firebase';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
@@ -9,9 +9,6 @@ import Dashboard from './components/Dashboard';
 import Accounts from './components/Accounts';
 import Transactions from './components/Transactions';
 import { LayoutDashboard, Wallet, ReceiptText, LogOut, Menu, X } from 'lucide-react';
-
-// Destructure from namespace to resolve reported "no exported member" errors
-const { HashRouter, Routes, Route, Navigate, Link, useNavigate } = ReactRouterDOM;
 
 const Sidebar = ({ user, handleLogout }: { user: any, handleLogout: () => void }) => {
   const [isOpen, setIsOpen] = useState(false);

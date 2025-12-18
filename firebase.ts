@@ -1,7 +1,13 @@
 
-// Use namespace imports to work around environment issues with named exports in @firebase modules
-import * as firebaseApp from 'firebase/app';
-import * as firebaseAuth from 'firebase/auth';
+// Fix: Use named imports for Firebase modules to ensure correct typing and avoid "property does not exist" errors
+import { initializeApp } from 'firebase/app';
+import { 
+  getAuth, 
+  onAuthStateChanged as fbOnAuthStateChanged, 
+  signOut as fbSignOut, 
+  signInWithEmailAndPassword as fbSignIn, 
+  createUserWithEmailAndPassword as fbCreateUser 
+} from 'firebase/auth';
 import { 
   getFirestore, 
   collection as fbCollection, 
@@ -28,17 +34,8 @@ let auth: any = null;
 let db: any = null;
 let isOffline = false;
 
-// Destructure from namespace imports to avoid "no exported member" errors during build/lint
-const { initializeApp } = firebaseApp;
-const { 
-  getAuth, 
-  onAuthStateChanged: fbOnAuthStateChanged, 
-  signOut: fbSignOut, 
-  signInWithEmailAndPassword: fbSignIn, 
-  createUserWithEmailAndPassword: fbCreateUser 
-} = firebaseAuth;
-
 try {
+  // Fix: Directly call imported initializeApp and getAuth
   const app = initializeApp(firebaseConfig);
   auth = getAuth(app);
   db = getFirestore(app);
