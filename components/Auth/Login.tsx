@@ -1,9 +1,11 @@
 
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword, auth, isOffline } from '../../firebase';
-// Fix: Use named imports for react-router-dom to avoid member resolution errors
-import { Link, useNavigate } from 'react-router-dom';
+// Fix: Use namespace import for react-router-dom to resolve "no exported member" errors
+import * as Router from 'react-router-dom';
 import { Mail, Lock, LogIn } from 'lucide-react';
+
+const { Link, useNavigate } = Router as any;
 
 const Login = () => {
   const [email, setEmail] = useState('');

@@ -1,25 +1,29 @@
 
-// Fix: Use named imports instead of namespace imports to resolve property access errors
-import { initializeApp } from 'firebase/app';
-import { 
+// Fix: Use namespace imports and cast to any to resolve "no exported member" errors in this environment
+import * as FirebaseApp from 'firebase/app';
+import * as FirebaseAuth from 'firebase/auth';
+import * as FirebaseFirestore from 'firebase/firestore';
+
+const { initializeApp } = FirebaseApp as any;
+const { 
   getAuth, 
-  onAuthStateChanged as firebaseOnAuthStateChanged, 
-  signOut as firebaseSignOut, 
-  signInWithEmailAndPassword as firebaseSignIn, 
-  createUserWithEmailAndPassword as firebaseCreateUser 
-} from 'firebase/auth';
-import { 
+  onAuthStateChanged: firebaseOnAuthStateChanged, 
+  signOut: firebaseSignOut, 
+  signInWithEmailAndPassword: firebaseSignIn, 
+  createUserWithEmailAndPassword: firebaseCreateUser 
+} = FirebaseAuth as any;
+const { 
   getFirestore, 
-  collection as firebaseCollection, 
-  doc as firebaseDoc, 
-  getDoc as firebaseGetDoc, 
-  addDoc as firebaseAddDoc, 
-  updateDoc as firebaseUpdateDoc, 
-  deleteDoc as firebaseDeleteDoc, 
-  query as firebaseQuery, 
-  where as firebaseWhere, 
-  onSnapshot as firebaseOnSnapshot 
-} from 'firebase/firestore';
+  collection: firebaseCollection, 
+  doc: firebaseDoc, 
+  getDoc: firebaseGetDoc, 
+  addDoc: firebaseAddDoc, 
+  updateDoc: firebaseUpdateDoc, 
+  deleteDoc: firebaseDeleteDoc, 
+  query: firebaseQuery, 
+  where: firebaseWhere, 
+  onSnapshot: firebaseOnSnapshot 
+} = FirebaseFirestore as any;
 
 const firebaseConfig = {
   apiKey: "AIzaSyDUEbLW7K_2wh5FPtIQlDOvH9fMMpNj8YA",
@@ -35,7 +39,7 @@ let db: any = null;
 let isOffline = false;
 
 try {
-  // Fix: Access methods directly through named imports to satisfy modular SDK requirements
+  // Access methods directly through namespace imports to satisfy requirements
   const app = initializeApp(firebaseConfig);
   auth = getAuth(app);
   db = getFirestore(app);
