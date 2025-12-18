@@ -11,15 +11,16 @@ export default defineConfig({
     'process.env.API_KEY': JSON.stringify(process.env.API_KEY || ''),
   },
   build: {
+    outDir: 'dist',
     minify: 'esbuild',
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        // 移除手動分塊中對 'firebase' 的直接引用，解決解析錯誤
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom', 'recharts', 'lucide-react'],
+          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+        },
       },
     },
-  },
-  esbuild: {
-    // 生產環境移除 console 與 debugger
-    drop: ['console', 'debugger'],
   },
 });

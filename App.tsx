@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-// Fix: Use namespace import for react-router-dom to resolve property access errors
-import * as Router from 'react-router-dom';
+// Fix: Use named imports for react-router-dom to resolve property access errors
+import { HashRouter, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signOut, auth, isOffline } from './firebase';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
@@ -9,9 +9,6 @@ import Dashboard from './components/Dashboard';
 import Accounts from './components/Accounts';
 import Transactions from './components/Transactions';
 import { LayoutDashboard, Wallet, ReceiptText, LogOut, Menu, X } from 'lucide-react';
-
-// Fix: Extract components from the router namespace
-const { HashRouter, Routes, Route, Navigate, Link, useNavigate } = Router;
 
 const Sidebar = ({ user, handleLogout }: { user: any, handleLogout: () => void }) => {
   const [isOpen, setIsOpen] = useState(false);

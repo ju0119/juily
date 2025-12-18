@@ -1,12 +1,9 @@
 
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword, auth, isOffline } from '../../firebase';
-// Fix: Use namespace import for react-router-dom to avoid member resolution errors
-import * as Router from 'react-router-dom';
+// Fix: Use named imports for react-router-dom to avoid member resolution errors
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, LogIn } from 'lucide-react';
-
-// Fix: Extract components from the router namespace
-const { Link, useNavigate } = Router;
 
 const Login = () => {
   const [email, setEmail] = useState('');
