@@ -27,12 +27,12 @@ const Transactions = () => {
 
     const qTx = query(collection(db, 'transactions'), where('userId', '==', auth.currentUser.uid));
     const unsubTx = onSnapshot(qTx, (snapshot: any) => {
-      setTransactions(snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() } as Transaction)));
+      setTransactions(snapshot.docs.map((docSnap: any) => ({ id: docSnap.id, ...docSnap.data() } as Transaction)));
     });
 
     const qAcc = query(collection(db, 'accounts'), where('userId', '==', auth.currentUser.uid));
     const unsubAcc = onSnapshot(qAcc, (snapshot: any) => {
-      setAccounts(snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() } as BankAccount)));
+      setAccounts(snapshot.docs.map((docSnap: any) => ({ id: docSnap.id, ...docSnap.data() } as BankAccount)));
     });
 
     return () => { unsubTx(); unsubAcc(); };

@@ -19,7 +19,7 @@ const Accounts = () => {
     if (!db || !auth?.currentUser) return;
     const q = query(collection(db, 'accounts'), where('userId', '==', auth.currentUser.uid));
     return onSnapshot(q, (snapshot: any) => {
-      setAccounts(snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() } as BankAccount)));
+      setAccounts(snapshot.docs.map((docSnap: any) => ({ id: docSnap.id, ...docSnap.data() } as BankAccount)));
     });
   }, []);
 

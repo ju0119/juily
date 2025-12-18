@@ -7,9 +7,8 @@ export const getFinancialAdvice = async (
   transactions: Transaction[]
 ): Promise<string> => {
   try {
-    // Always use a new instance to ensure it uses the latest API key from the environment.
-    // Use gemini-3-pro-preview for complex reasoning tasks as per guidelines.
-    // Ensure the apiKey is passed as a named parameter with proper spacing.
+    // 每次呼叫時建立新實例，確保使用最新的 API KEY。
+    // 使用命名參數初始化：new GoogleGenAI({ apiKey: ... })
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
     const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
@@ -36,14 +35,13 @@ export const getFinancialAdvice = async (
       請保持回覆語氣專業且精簡。
     `;
 
-    // Always use ai.models.generateContent with model name and prompt.
-    // Using gemini-3-pro-preview for advanced financial reasoning.
+    // 使用 gemini-3-pro-preview 進行複雜理財邏輯分析
     const response: GenerateContentResponse = await ai.models.generateContent({
       model: 'gemini-3-pro-preview',
       contents: prompt,
     });
 
-    // Access the text property directly (not a method).
+    // 直接存取 .text 屬性 (不是方法)
     return response.text || "AI 暫時無法分析，請稍後再試。";
   } catch (error) {
     console.error("Gemini AI 分析失敗:", error);

@@ -1,8 +1,11 @@
 
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword, auth, isOffline } from '../../firebase';
-import { Link, useNavigate } from 'react-router-dom';
+// Use namespace import to resolve "no exported member" errors in the current environment
+import * as ReactRouterDOM from 'react-router-dom';
 import { Mail, Lock, UserPlus } from 'lucide-react';
+
+const { Link, useNavigate } = ReactRouterDOM;
 
 const Register = () => {
   const [email, setEmail] = useState('');

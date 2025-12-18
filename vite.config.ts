@@ -14,9 +14,7 @@ export default defineConfig({
     minify: 'esbuild',
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom', 'recharts', 'firebase'],
-        },
+        // 移除手動分塊中對 'firebase' 的直接引用，解決解析錯誤
       },
     },
   },
