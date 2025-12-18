@@ -1,5 +1,5 @@
 
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { Transaction, BankAccount } from "../types";
 
 export const getFinancialAdvice = async (
@@ -9,7 +9,8 @@ export const getFinancialAdvice = async (
   try {
     // Always use a new instance to ensure it uses the latest API key from the environment.
     // Use gemini-3-pro-preview for complex reasoning tasks as per guidelines.
-    const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+    // Ensure the apiKey is passed as a named parameter with proper spacing.
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
     const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
     const recentTxStr = transactions
@@ -36,7 +37,8 @@ export const getFinancialAdvice = async (
     `;
 
     // Always use ai.models.generateContent with model name and prompt.
-    const response = await ai.models.generateContent({
+    // Using gemini-3-pro-preview for advanced financial reasoning.
+    const response: GenerateContentResponse = await ai.models.generateContent({
       model: 'gemini-3-pro-preview',
       contents: prompt,
     });

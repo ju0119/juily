@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword, auth, isOffline } from '../../firebase';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, UserPlus } from 'lucide-react';
 
 const Register = () => {
@@ -9,8 +9,7 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  // Replaced useNavigate with useHistory to support potential v5 environment
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +24,7 @@ const Register = () => {
     try {
       if (!auth) throw new Error("Auth not initialized");
       await createUserWithEmailAndPassword(auth, email, password);
-      history.push('/dashboard');
+      navigate('/dashboard');
     } catch (err: any) {
       setError('註冊失敗：' + err.message);
     }
