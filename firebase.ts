@@ -1,25 +1,8 @@
 
-// Fix: Use named imports for Firebase modules to ensure correct typing and avoid "property does not exist" errors
-import { initializeApp } from 'firebase/app';
-import { 
-  getAuth, 
-  onAuthStateChanged as fbOnAuthStateChanged, 
-  signOut as fbSignOut, 
-  signInWithEmailAndPassword as fbSignIn, 
-  createUserWithEmailAndPassword as fbCreateUser 
-} from 'firebase/auth';
-import { 
-  getFirestore, 
-  collection as fbCollection, 
-  doc as fbDoc, 
-  getDoc as fbGetDoc, 
-  addDoc as fbAddDoc, 
-  updateDoc as fbUpdateDoc, 
-  deleteDoc as fbDeleteDoc, 
-  query as fbQuery, 
-  where as fbWhere, 
-  onSnapshot as fbOnSnapshot 
-} from 'firebase/firestore';
+// Fix: Use namespace imports to resolve "no exported member" errors in some build environments
+import * as firebaseApp from 'firebase/app';
+import * as firebaseAuth from 'firebase/auth';
+import * as firebaseFirestore from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDUEbLW7K_2wh5FPtIQlDOvH9fMMpNj8YA",
@@ -35,10 +18,10 @@ let db: any = null;
 let isOffline = false;
 
 try {
-  // Fix: Directly call imported initializeApp and getAuth
-  const app = initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  db = getFirestore(app);
+  // Fix: Access methods through namespace objects to satisfy strict export checks
+  const app = firebaseApp.initializeApp(firebaseConfig);
+  auth = firebaseAuth.getAuth(app);
+  db = firebaseFirestore.getFirestore(app);
   console.log("Firebase 服務啟動成功 (Modular 模式)");
 } catch (error) {
   console.error("Firebase 初始化失敗:", error);
@@ -46,23 +29,22 @@ try {
 }
 
 // 供元件使用的 Shim 介面
-export const onAuthStateChanged = (authObj: any, callback: any) => fbOnAuthStateChanged(authObj, callback);
-export const signOut = (authObj: any) => fbSignOut(authObj);
-export const signInWithEmailAndPassword = (authObj: any, email: string, pass: string) => fbSignIn(authObj, email, pass);
-export const createUserWithEmailAndPassword = (authObj: any, email: string, pass: string) => fbCreateUser(authObj, email, pass);
+export const onAuthStateChanged = (authObj: any, callback: any) => firebaseAuth.onAuthStateChanged(authObj, callback);
+export const signOut = (authObj: any) => firebaseAuth.signOut(authObj);
+export const signInWithEmailAndPassword = (authObj: any, email: string, pass: string) => firebaseAuth.signInWithEmailAndPassword(authObj, email, pass);
+export const createUserWithEmailAndPassword = (authObj: any, email: string, pass: string) => firebaseAuth.createUserWithEmailAndPassword(authObj, email, pass);
 
-export const collection = (dbObj: any, path: string) => fbCollection(dbObj, path);
+export const collection = (dbObj: any, path: string) => firebaseFirestore.collection(dbObj, path);
 export const doc = (dbOrCol: any, pathOrId: string, id?: string) => {
-  if (id) return fbDoc(fbCollection(db, pathOrId), id);
-  // 在原本程式碼中 doc(db, 'accounts', id) 的寫法對應：
-  return fbDoc(dbOrCol, pathOrId, id as string);
+  if (id) return firebaseFirestore.doc(firebaseFirestore.collection(db, pathOrId), id);
+  return firebaseFirestore.doc(dbOrCol, pathOrId, id as string);
 };
-export const getDoc = (docRef: any) => fbGetDoc(docRef);
-export const addDoc = (colRef: any, data: any) => fbAddDoc(colRef, data);
-export const updateDoc = (docRef: any, data: any) => fbUpdateDoc(docRef, data);
-export const deleteDoc = (docRef: any) => fbDeleteDoc(docRef);
-export const query = (ref: any, ...constraints: any[]) => fbQuery(ref, ...constraints);
-export const where = (field: string, op: any, val: any) => fbWhere(field, op, val);
-export const onSnapshot = (ref: any, callback: any) => fbOnSnapshot(ref, callback);
+export const getDoc = (docRef: any) => firebaseFirestore.getDoc(docRef);
+export const addDoc = (colRef: any, data: any) => firebaseFirestore.addDoc(colRef, data);
+export const updateDoc = (docRef: any, data: any) => firebaseFirestore.updateDoc(docRef, data);
+export const deleteDoc = (docRef: any) => firebaseFirestore.deleteDoc(docRef);
+export const query = (ref: any, ...constraints: any[]) => firebaseFirestore.query(ref, ...constraints);
+export const where = (field: string, op: any, val: any) => firebaseFirestore.where(field, op, val);
+export const onSnapshot = (ref: any, callback: any) => firebaseFirestore.onSnapshot(ref, callback);
 
 export { auth, db, isOffline };

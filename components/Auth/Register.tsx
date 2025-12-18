@@ -1,9 +1,12 @@
 
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword, auth, isOffline } from '../../firebase';
-// Fix: Use named imports for React Router to resolve property access errors
-import { Link, useNavigate } from 'react-router-dom';
+// Fix: Use namespace import for react-router-dom to avoid member resolution errors
+import * as Router from 'react-router-dom';
 import { Mail, Lock, UserPlus } from 'lucide-react';
+
+// Fix: Extract components from the router namespace
+const { Link, useNavigate } = Router;
 
 const Register = () => {
   const [email, setEmail] = useState('');
